@@ -52,6 +52,27 @@ para a igreja, então:
 - Não acrescente doutrina, aplicação ou versículo que o pregador não usou, a não ser como
   referência de um versículo que ele citou sem dizer onde está.
 
+## Culto ou célula
+
+Veja qual dos dois o usuário pediu. Se não disser, pergunte.
+
+- **Culto** (projeção da pregação): 15 a 22 slides seguindo a mensagem.
+  Modelo: `references/exemplo-slides.html`.
+- **Célula** (encontro em grupo, revisando a mensagem de domingo): 10 a 13 slides.
+  Modelo: `references/exemplo-celula.html`. Ordem: recados, capa ("Célula", tema, quem
+  pregou e a data do culto), quebra-gelo ligado ao tema, leitura do texto-base, resumo em
+  3 ideias, 2 ou 3 slides de conversa (a história bíblica num cartão à esquerda, 2 ou 3
+  perguntas abertas à direita), uma frase de destaque, o desafio da semana (3 ações
+  concretas) e oração em trios, e o encerramento. Cada etapa leva um selo com o tempo
+  sugerido (o total fica perto de 75 minutos).
+  - As perguntas são abertas, pessoais e ligadas a um versículo. Evite perguntas de
+    sim ou não e perguntas de "teste de conhecimento".
+  - Em pergunta sensível (pecado, vícios), ofereça a conversa em duplas ou com o
+    líder depois do encontro.
+  - Especulações da pregação (por exemplo, a teoria do decreto de Esdras) ficam fora
+    da célula, a não ser que o usuário peça: numa conversa em grupo elas viram o
+    assunto principal.
+
 ## Fluxo de trabalho
 
 1. **Leia a transcrição inteira** e monte o roteiro: 15 a 22 slides, cada um com tipo,
