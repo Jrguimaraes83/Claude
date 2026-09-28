@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Em Memória de Mim — Pr. Diogo Rojas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Nunito+Sans:wght@400;600;700;800&display=swap">
+<style>
+  /* =========================================================
+     IDENTIDADE VISUAL — troque aqui pelas cores da Bola de Neve Londrina.
+     Os valores abaixo são provisórios (preto, branco e um tom de vinho).
+     ========================================================= */
+  :root{
+    --escuro:        #141414;   /* fundo dos slides escuros */
+    --escuro-card:   #222222;   /* cartões sobre fundo escuro */
+    --escuro-borda:  #3A3A3A;
+    --claro:         #F5F4F0;   /* fundo dos slides claros */
+    --claro-card:    #FFFFFF;
+    --claro-borda:   #DEDBD3;
+    --texto-escuro:  #1A1A1A;   /* texto sobre fundo claro */
+    --texto-suave-e: #4A4A4A;   /* texto secundário sobre claro */
+    --texto-claro:   #F5F4F0;   /* texto sobre fundo escuro */
+    --texto-suave-c: #CFCBC2;   /* texto secundário sobre escuro */
+    --destaque:      #8C2F39;   /* cor de destaque em fundo claro */
+    --destaque-c:    #D9B26A;   /* cor de destaque em fundo escuro */
+    --destaque-bg:   #6B2230;   /* fundo dos slides de destaque */
+    --fonte-titulo:  'Libre Baskerville', Georgia, serif;
+    --fonte-texto:   'Nunito Sans', Arial, sans-serif;
+  }
+  /* A logo: salve o arquivo como "logo.png" na mesma pasta deste HTML. */
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:#000;overflow:hidden}
+  body{font-family:var(--fonte-texto)}
+  .stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+  .deck{width:1920px;height:1080px;position:relative;transform-origin:center center;flex:none}
+  .slide{position:absolute;inset:0;padding:128px;display:none;flex-direction:column;gap:40px;overflow:hidden}
+  .slide.ativo{display:flex;animation:entra .35s ease}
+  @keyframes entra{from{opacity:0}to{opacity:1}}
+  .escuro{background:var(--escuro);color:var(--texto-claro)}
+  .claro{background:var(--claro);color:var(--texto-escuro)}
+  .destaque{background:var(--destaque-bg);color:var(--texto-claro)}
+  .centro{justify-content:center}
+
+  .rotulo{font-size:28px;font-weight:800;letter-spacing:4px;text-transform:uppercase}
+  .escuro .rotulo,.destaque .rotulo{color:var(--destaque-c)}
+  .claro .rotulo{color:var(--destaque)}
+  h1{font-family:var(--fonte-titulo);font-size:120px;font-weight:700;line-height:1.1}
+  h2{font-family:var(--fonte-titulo);font-size:72px;font-weight:700;line-height:1.15;max-width:1600px}
+  h3{font-size:36px;font-weight:800}
+  .corpo{font-size:40px;line-height:1.4;max-width:1600px}
+  .menor{font-size:32px;line-height:1.4}
+  .escuro .corpo,.escuro .menor,.destaque .corpo{color:var(--texto-suave-c)}
+  .claro .corpo,.claro .menor{color:var(--texto-suave-e)}
+  .subtitulo{font-family:var(--fonte-titulo);font-style:italic;font-size:44px;line-height:1.35}
+  .escuro .subtitulo,.destaque .subtitulo{color:var(--texto-suave-c)}
+  .traco{width:160px;height:4px;background:var(--destaque-c)}
+
+  .versiculo{padding:32px 40px;display:flex;flex-direction:column;gap:10px}
+  .versiculo p{font-family:var(--fonte-titulo);font-style:italic;font-size:36px;line-height:1.45}
+  .versiculo .ref{font-family:var(--fonte-texto);font-style:normal;font-size:28px;font-weight:800}
+  .escuro .versiculo{background:var(--escuro-card);border-left:8px solid var(--destaque-c)}
+  .escuro .versiculo .ref{color:var(--destaque-c)}
+  .claro .versiculo{background:var(--claro-card);border-left:8px solid var(--destaque)}
+  .claro .versiculo .ref{color:var(--destaque)}
+  .destaque .versiculo{background:rgba(0,0,0,.18);border-left:8px solid var(--destaque-c)}
+  .destaque .versiculo .ref{color:var(--destaque-c)}
+
+  .linha{display:flex;gap:32px}
+  .card{flex:1;display:flex;flex-direction:column;gap:14px;padding:40px;border-radius:16px}
+  .escuro .card{background:var(--escuro-card);border:1px solid var(--escuro-borda)}
+  .claro .card{background:var(--claro-card);border:1px solid var(--claro-borda)}
+  .escuro .card h3,.escuro .card .ref{color:var(--destaque-c)}
+  .claro .card h3,.claro .card .ref{color:var(--destaque)}
+  .card p{font-size:32px;line-height:1.4}
+  .escuro .card p{color:var(--texto-suave-c)}
+  .claro .card p{color:var(--texto-suave-e)}
+  .card .ref{font-size:28px;font-weight:800}
+  .card .grande{font-size:48px;font-weight:800;line-height:1.2}
+  .escuro .card .grande{color:var(--texto-claro)}
+
+  .perguntas{list-style:none;display:flex;flex-direction:column;gap:10px;font-size:40px;line-height:1.35;color:var(--texto-suave-c)}
+  .perguntas li::before{content:"— ";color:var(--destaque-c)}
+
+  .texto-base{display:flex;flex-direction:column;gap:26px}
+  .texto-base .item{display:flex;gap:40px;align-items:baseline}
+  .texto-base .v{width:190px;flex:none;font-size:32px;font-weight:800;color:var(--destaque)}
+  .texto-base .t{font-family:var(--fonte-titulo);font-style:italic;font-size:36px;line-height:1.45;color:var(--texto-suave-e)}
+
+  table{border-collapse:collapse;width:100%;font-size:36px}
+  th{font-family:var(--fonte-titulo);font-size:40px;text-align:left;padding:20px 28px;color:var(--destaque-c);border-bottom:2px solid var(--destaque-c)}
+  td{padding:22px 28px;line-height:1.35;color:var(--texto-suave-c);border-bottom:1px solid var(--escuro-borda);width:50%}
+
+  .logo{position:absolute;top:56px;right:128px;height:64px;max-width:320px;object-fit:contain}
+  .logo-capa{height:120px;max-width:520px;object-fit:contain;align-self:flex-start}
+  .logo-texto{position:absolute;top:60px;right:128px;font-size:24px;font-weight:800;letter-spacing:3px;text-transform:uppercase;opacity:.7}
+  .rodape{position:absolute;left:128px;bottom:56px;font-size:24px;opacity:.55}
+
+  .hud{position:fixed;right:16px;bottom:12px;color:#888;font:14px/1 var(--fonte-texto);user-select:none;z-index:5}
+  .hud button{background:none;border:1px solid #444;color:#aaa;border-radius:6px;padding:6px 10px;margin-left:6px;cursor:pointer;font:inherit}
+  .hud.oculto{opacity:0;transition:opacity .4s}
+
+  @media print{
+    @page{size:1920px 1080px;margin:0}
+    html,body{overflow:visible;height:auto;background:none}
+    .stage{position:static;display:block}
+    .deck{transform:none!important;height:auto}
+    .slide{position:relative;display:flex!important;width:1920px;height:1080px;page-break-after:always;animation:none}
+    .hud{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="stage"><div class="deck" id="deck">
+
+<!-- 1. RECADOS -->
+<section class="slide escuro">
+  <p class="rotulo">Recados</p>
+  <h2>Congresso Avalanche (Flame)</h2>
+  <div class="linha">
+    <div class="card"><p class="ref">Data</p><p class="grande">10/10/2026</p><p>Sábado</p></div>
+    <div class="card"><p class="ref">Local</p><p class="grande">Na sede</p></div>
+    <div class="card"><p class="ref">Inscrição</p><p class="grande">R$ 90</p></div>
+    <div class="card"><p class="ref">Ônibus</p><p class="grande">R$ 260</p><p>Restam 4 vagas</p></div>
+  </div>
+  <p class="menor">Quem for de ônibus paga a inscrição e o ônibus. Procure a liderança para garantir sua vaga.</p>
+</section>
+
+<!-- 2. TEMA -->
+<section class="slide escuro centro">
+  <img class="logo-capa" src="logo.png" alt="Bola de Neve Londrina" onerror="this.remove()">
+  <p class="rotulo">Culto de Santa Ceia</p>
+  <h1>Em Memória de Mim</h1>
+  <p class="subtitulo">Jeová Jiré — o Senhor proverá</p>
+  <div class="traco"></div>
+  <div>
+    <p style="font-size:44px;font-weight:800;line-height:1.3">Pr. Diogo Rojas</p>
+    <p class="menor">27 de setembro de 2026</p>
+  </div>
+</section>
+
+<!-- 3. TEXTO BASE -->
+<section class="slide claro">
+  <p class="rotulo">Texto base · Gênesis 22.1-14</p>
+  <h2>Deus põe Abraão à prova</h2>
+  <div class="texto-base">
+    <div class="item"><p class="v">v. 2</p><p class="t">“Tome seu filho, seu único filho, Isaque, a quem você ama… Sacrifique-o ali como holocausto.”</p></div>
+    <div class="item"><p class="v">v. 8</p><p class="t">“Deus mesmo há de prover o cordeiro para o holocausto, meu filho.”</p></div>
+    <div class="item"><p class="v">v. 13-14</p><p class="t">“Abraão ergueu os olhos e viu um carneiro preso pelos chifres num arbusto… E deu àquele lugar o nome de: O Senhor proverá.”</p></div>
+  </div>
+</section>
+
+<!-- 4. ANSIEDADE -->
+<section class="slide escuro">
+  <p class="rotulo">Sofrer antes da hora</p>
+  <h2>O amanhã ainda não chegou, mas já rouba a nossa paz.</h2>
+  <ul class="perguntas">
+    <li>E se faltar?</li>
+    <li>E se eu perder o emprego?</li>
+    <li>E se a porta que espero não abrir?</li>
+    <li>E se a cura não vier?</li>
+  </ul>
+  <div class="versiculo"><p>“Não andem ansiosos por coisa alguma.”</p><p class="ref">Filipenses 4.6</p></div>
+</section>
+
+<!-- 5. ELIAS -->
+<section class="slide claro">
+  <p class="rotulo">Elias · 1 Reis 19</p>
+  <h2>Elias temeu uma morte que nunca aconteceu.</h2>
+  <div class="linha">
+    <div class="card"><h3>O medo</h3><p>Depois do fogo no Carmelo, uma ameaça de Jezabel fez Elias fugir e pedir para morrer.</p><p class="ref">1 Reis 19.2-4</p></div>
+    <div class="card"><h3>O que aconteceu</h3><p>Elias não morreu. Foi levado ao céu num redemoinho.</p><p class="ref">2 Reis 2.11</p></div>
+  </div>
+  <p class="corpo">Você não sabe como Deus vai fazer. Mas Ele vai fazer. <span style="color:var(--destaque);font-weight:700">(Eclesiastes 11.5)</span></p>
+</section>
+
+<!-- 6. JEOVÁ JIRÉ -->
+<section class="slide destaque centro">
+  <p class="rotulo">Gênesis 22.14</p>
+  <h1>Jeová Jiré</h1>
+  <p class="subtitulo">O Senhor proverá. Deus é suficiente.</p>
+  <div class="traco"></div>
+  <p class="corpo">Provisão não é Deus nos dar tudo o que queremos. É Deus ser fiel em tudo o que Ele determinou fazer.</p>
+</section>
+
+<!-- 7. PREPARADO ANTES -->
+<section class="slide claro">
+  <p class="rotulo">Deus prepara antes</p>
+  <h2>Enquanto Abraão subia o monte, o carneiro já estava lá.</h2>
+  <p class="corpo">O carneiro precisou nascer. O arbusto precisou crescer no lugar certo. Provisão não é socorro de última hora: Deus já sabe do que vamos precisar.</p>
+  <div class="versiculo"><p>“O meu Deus suprirá todas as necessidades de vocês, de acordo com as suas gloriosas riquezas em Cristo Jesus.”</p><p class="ref">Filipenses 4.19</p></div>
+</section>
+
+<!-- 8. OBEDIÊNCIA -->
+<section class="slide escuro">
+  <p class="rotulo">Obediência</p>
+  <h2>A primeira provisão veio depois de um passo de obediência.</h2>
+  <p class="corpo">Deus pediu a Abraão o filho. O que Ele está pedindo a você que ainda não foi para o altar?</p>
+  <div class="versiculo"><p>“Se vocês obedecerem fielmente ao Senhor, o seu Deus… todas estas bênçãos virão sobre vocês.”</p><p class="ref">Deuteronômio 28.1-2</p></div>
+  <p class="menor">Jesus está mais pronto para perdoar do que nós para nos arrepender.</p>
+</section>
+
+<!-- 9. PERDAS -->
+<section class="slide claro">
+  <p class="rotulo">Quando perdemos</p>
+  <h2>Perder faz parte. Deus já preparou a solução.</h2>
+  <p class="corpo">Recursos, reputação, amigos, pessoas no trabalho ou na igreja. A igreja não é de homens: é do Senhor.</p>
+  <div class="versiculo"><p>“Não temerá más notícias; seu coração está firme, confiante no Senhor.”</p><p class="ref">Salmos 112.7</p></div>
+  <p class="menor">Ou cremos no Deus da provisão, ou vivemos reféns da ansiedade.</p>
+</section>
+
+<!-- 10. SAUL E DAVI -->
+<section class="slide escuro">
+  <p class="rotulo">Saul e Davi · 1 Samuel</p>
+  <h2>Enquanto Saul deixava de obedecer, Deus já preparava Davi.</h2>
+  <div class="linha">
+    <div class="card"><h3>Saul</h3><p>Ofereceu o sacrifício que não cabia a ele. Sem direção de Deus, acabou procurando uma médium.</p><p class="ref">1 Samuel 13.8-14 · 28.6-7</p></div>
+    <div class="card"><h3>Davi</h3><p>Cuidava de ovelhas. Foi ungido e esperou anos, como o cordeiro que crescia até chegar ao monte.</p><p class="ref">1 Samuel 16.11-13</p></div>
+  </div>
+</section>
+
+<!-- 11. MATIAS E PAULO -->
+<section class="slide claro">
+  <p class="rotulo">Atos 1 · Atos 9</p>
+  <h2>Os discípulos escolheram Matias. Deus levantou Paulo.</h2>
+  <div class="linha">
+    <div class="card"><h3>Matias</h3><p>Escolhido por sorteio para o lugar de Judas. Um homem bom, mas a Bíblia não volta a falar dele.</p><p class="ref">Atos 1.23-26</p></div>
+    <div class="card"><h3>Paulo</h3><p>“Este homem é o instrumento que escolhi para levar o meu nome diante dos gentios.”</p><p class="ref">Atos 9.15</p></div>
+  </div>
+</section>
+
+<!-- 12. JUDAS E PAULO -->
+<section class="slide escuro">
+  <p class="rotulo">Dois olhares</p>
+  <h2>Judas andou com Jesus e O perdeu. Paulo encontrou Jesus e perdeu a visão.</h2>
+  <p class="corpo">O problema de Judas não foi o dinheiro. Foi o dinheiro ocupar o lugar de Cristo.</p>
+  <div class="versiculo"><p>“Considero tudo como perda… considero como esterco, para poder ganhar Cristo.”</p><p class="ref">Filipenses 3.8</p></div>
+</section>
+
+<!-- 13. NA CRUZ -->
+<section class="slide claro">
+  <p class="rotulo">João 19.25-27</p>
+  <h2>Mesmo na cruz, Jesus cuidou da provisão.</h2>
+  <div class="versiculo"><p>“Mulher, aí está o seu filho.” E ao discípulo: “Aí está a sua mãe.” Daquela hora em diante, o discípulo a recebeu em sua casa.</p><p class="ref">João 19.26-27</p></div>
+  <p class="corpo">Para a mãe, um filho. Para o filho, uma mãe. E uma casa para morar.</p>
+</section>
+
+<!-- 14. O CONSOLADOR -->
+<section class="slide escuro">
+  <p class="rotulo">João 14 · Atos 2</p>
+  <h2>Jesus voltou ao Pai, mas não nos deixou sozinhos.</h2>
+  <div class="versiculo"><p>“Eu pedirei ao Pai, e ele lhes dará outro Conselheiro para estar com vocês para sempre… Não os deixarei órfãos.”</p><p class="ref">João 14.16-18</p></div>
+  <p class="corpo">No Pentecostes, o Espírito Santo veio. Hoje nós somos o templo da presença de Deus.</p>
+</section>
+
+<!-- 15. O CORDEIRO -->
+<section class="slide claro centro">
+  <p class="rotulo">João 1.29</p>
+  <h2 style="font-style:italic;font-weight:400">“Eis o Cordeiro de Deus, que tira o pecado do mundo.”</h2>
+  <div class="traco" style="background:var(--destaque)"></div>
+  <p class="corpo">Em Gênesis 22, um cordeiro morreu no lugar de Isaque. Na cruz, Cristo morreu no lugar de todos nós.</p>
+</section>
+
+<!-- 16. A MESMA CENA -->
+<section class="slide escuro">
+  <p class="rotulo">Gênesis 22.6 · João 19.17</p>
+  <h2>A mesma cena, séculos depois.</h2>
+  <table>
+    <tr><th>Monte Moriá</th><th>Calvário</th></tr>
+    <tr><td>Isaque carregou a lenha</td><td>Jesus carregou a cruz</td></tr>
+    <tr><td>Deus proveu um substituto para Isaque</td><td>Jesus se tornou o nosso substituto</td></tr>
+    <tr><td>O cordeiro morreu no lugar do filho</td><td>O Filho morreu no lugar de todos nós</td></tr>
+  </table>
+</section>
+
+<!-- 17. ROMANOS 8.32 -->
+<section class="slide destaque centro">
+  <p class="rotulo">Romanos 8.32</p>
+  <div class="versiculo"><p style="font-size:44px">“Aquele que não poupou o seu próprio Filho, mas o entregou por todos nós, como não nos dará juntamente com ele, e de graça, todas as coisas?”</p></div>
+  <p class="corpo">Se Deus já entregou o maior, por que não cuidaria do resto?</p>
+</section>
+
+<!-- 18. A MAIOR PROVISÃO -->
+<section class="slide escuro centro">
+  <p class="rotulo">A maior provisão</p>
+  <h1 style="font-size:96px">Não é algo.<br>É alguém: Jesus.</h1>
+  <p class="corpo">Deus não proveu apenas aquilo que precisávamos. Proveu Aquele de quem precisávamos.</p>
+  <div class="versiculo"><p>“O justo viverá pela fé.”</p><p class="ref">Romanos 1.17</p></div>
+</section>
+
+<!-- 19. CEIA -->
+<section class="slide claro">
+  <p class="rotulo">Santa Ceia</p>
+  <h2>Em memória de mim</h2>
+  <div class="versiculo"><p>“Isto é o meu corpo, que é dado em favor de vocês; façam isto em memória de mim.”</p><p class="ref">Lucas 22.19</p></div>
+  <p class="corpo">Abraão ergueu os olhos e viu o cordeiro (Gênesis 22.13). Pare de olhar só para o que falta. Levante os olhos: a provisão começa em quem está no trono.</p>
+</section>
+
+</div></div>
+
+<div class="hud" id="hud"><span id="contador"></span><button id="ant" aria-label="Anterior">‹</button><button id="prox" aria-label="Próximo">›</button><button id="tela" aria-label="Tela cheia">⛶</button></div>
+
+<script>
+(function(){
+  var deck=document.getElementById('deck');
+  var slides=[].slice.call(deck.querySelectorAll('.slide'));
+  var i=0;
+  // logo pequena em todos os slides, exceto o slide do tema (que tem a logo grande)
+  slides.forEach(function(s,n){
+    if(n===1)return;
+    var img=new Image();img.className='logo';img.alt='Bola de Neve Londrina';img.src='logo.png';
+    img.onerror=function(){var t=document.createElement('p');t.className='logo-texto';t.textContent='Bola de Neve Londrina';img.replaceWith(t);};
+    s.appendChild(img);
+    var r=document.createElement('p');r.className='rodape';r.textContent='Em Memória de Mim · '+(n+1)+'/'+slides.length;s.appendChild(r);
+  });
+  function escala(){var k=Math.min(innerWidth/1920,innerHeight/1080);deck.style.transform='scale('+k+')';}
+  function ir(n){i=Math.max(0,Math.min(slides.length-1,n));slides.forEach(function(s,k){s.classList.toggle('ativo',k===i)});
+    document.getElementById('contador').textContent=(i+1)+' / '+slides.length;history.replaceState(null,'','#'+(i+1));}
+  addEventListener('resize',escala);
+  addEventListener('keydown',function(e){
+    if(['ArrowRight','ArrowDown','PageDown',' ','Enter'].indexOf(e.key)>-1){e.preventDefault();ir(i+1)}
+    else if(['ArrowLeft','ArrowUp','PageUp','Backspace'].indexOf(e.key)>-1){e.preventDefault();ir(i-1)}
+    else if(e.key==='Home')ir(0);else if(e.key==='End')ir(slides.length-1);
+    else if(e.key==='f'||e.key==='F')tela();
+  });
+  function tela(){if(!document.fullscreenElement)document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();else document.exitFullscreen();}
+  document.getElementById('ant').onclick=function(e){e.stopPropagation();ir(i-1)};
+  document.getElementById('prox').onclick=function(e){e.stopPropagation();ir(i+1)};
+  document.getElementById('tela').onclick=function(e){e.stopPropagation();tela()};
+  document.querySelector('.stage').addEventListener('click',function(e){ir(e.clientX<innerWidth/3?i-1:i+1)});
+  var x0=null;addEventListener('touchstart',function(e){x0=e.touches[0].clientX},{passive:true});
+  addEventListener('touchend',function(e){if(x0===null)return;var d=e.changedTouches[0].clientX-x0;if(Math.abs(d)>50)ir(d<0?i+1:i-1);x0=null});
+  var hud=document.getElementById('hud'),t;addEventListener('mousemove',function(){hud.classList.remove('oculto');clearTimeout(t);t=setTimeout(function(){hud.classList.add('oculto')},2000)});
+  escala();ir(parseInt(location.hash.slice(1),10)-1||0);
+})();
+</script>
+</body>
+</html>
