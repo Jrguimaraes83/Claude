@@ -1,0 +1,11 @@
+{
+  "name": "jrguimaraes83-claude",
+  "owner": { "name": "Jrguimaraes83" },
+  "plugins": [
+    {
+      "name": "auto-modelo",
+      "source": "./plugins/auto-modelo",
+      "description": "Troca o modelo e o esforço de raciocínio do loop principal conforme a complexidade de cada prompt"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "name": "auto-modelo",
+  "version": "0.1.0",
+  "description": "Troca o modelo e o esforço de raciocínio do loop principal conforme a complexidade de cada prompt",
+  "types": "./types/index.d.ts"
+}
