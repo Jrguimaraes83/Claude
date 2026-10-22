@@ -1,6 +1,29 @@
 {
   "name": "auto-modelo",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Troca o modelo e o esforço de raciocínio do loop principal conforme a complexidade de cada prompt",
-  "types": "./types/index.d.ts"
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "modelo_simples": {
+      "type": "string",
+      "title": "Modelo para tarefas simples",
+      "description": "Modelo do loop principal quando o prompt é classificado como simples",
+      "default": "claude-sonnet-5-5",
+      "options": ["claude-haiku-5-5", "claude-sonnet-5-5", "claude-opus-5-5", "claude-fable-5-1"]
+    },
+    "modelo_moderada": {
+      "type": "string",
+      "title": "Modelo para tarefas moderadas",
+      "description": "Modelo do loop principal quando o prompt é classificado como moderado",
+      "default": "claude-sonnet-5-5",
+      "options": ["claude-haiku-5-5", "claude-sonnet-5-5", "claude-opus-5-5", "claude-fable-5-1"]
+    },
+    "modelo_complexa": {
+      "type": "string",
+      "title": "Modelo para tarefas complexas",
+      "description": "Modelo do loop principal quando o prompt é classificado como complexo",
+      "default": "claude-opus-5-5",
+      "options": ["claude-haiku-5-5", "claude-sonnet-5-5", "claude-opus-5-5", "claude-fable-5-1"]
+    }
+  }
 }

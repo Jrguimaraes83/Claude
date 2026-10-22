@@ -1,17 +1,57 @@
 import { atom, read, update } from 'claude-code'
-import type { EngineInterface, Register } from 'claude-code'
+import type { EngineInterface, PluginOptions, Register } from 'claude-code'
 
 import type { Modo, Nivel } from '../types'
 
 const nivelAtual = atom({ plugin: 'auto-modelo', key: 'nivel' } as const, null)
 const modoAtual = atom({ plugin: 'auto-modelo', key: 'modo' } as const, 'auto')
+const abaixoAtual = atom({ plugin: 'auto-modelo', key: 'abaixo' } as const, 0)
 
 type Esforco = 'low' | 'medium' | 'high'
+type Rota = { model: string; effort: Esforco }
 
-export const ROTA: Record<Nivel, { model: string; effort: Esforco; rotulo: string }> = {
-  simples: { model: 'claude-sonnet-5-5', effort: 'low', rotulo: 'Sonnet · low' },
-  moderada: { model: 'claude-sonnet-5-5', effort: 'medium', rotulo: 'Sonnet · medium' },
-  complexa: { model: 'claude-opus-5-5', effort: 'high', rotulo: 'Opus · high' },
+const ESFORCO: Record<Nivel, Esforco> = { simples: 'low', moderada: 'medium', complexa: 'high' }
+
+const PADRAO: Record<Nivel, string> = {
+  simples: 'claude-sonnet-5-5',
+  moderada: 'claude-sonnet-5-5',
+  complexa: 'claude-opus-5-5',
+}
+
+const NIVEIS: readonly Nivel[] = ['simples', 'moderada', 'complexa']
+
+/** Os modelos vêm do `/config` do mod; o esforço acompanha o nível. */
+export const rotas = (options: PluginOptions): Record<Nivel, Rota> => {
+  const modelo = (n: Nivel) => {
+    const v = options[`modelo_${n}`]
+    return typeof v === 'string' && v !== '' ? v : PADRAO[n]
+  }
+  return {
+    simples: { model: modelo('simples'), effort: ESFORCO.simples },
+    moderada: { model: modelo('moderada'), effort: ESFORCO.moderada },
+    complexa: { model: modelo('complexa'), effort: ESFORCO.complexa },
+  }
+}
+
+const rotulo = (r: Rota) => `${r.model.replace(/^claude-/, '')} · ${r.effort}`
+
+/**
+ * Trocar de modelo entre turnos descarta o cache do prompt: o novo modelo
+ * relê a conversa inteira a preço cheio. Subir de nível é imediato (errar
+ * para baixo custa qualidade); descer exige prompts seguidos pedindo menos.
+ */
+export const REBAIXAR_APOS = 2
+
+export const proximoNivel = (
+  anterior: Nivel | null,
+  pedido: Nivel,
+  abaixo: number,
+): { nivel: Nivel; abaixo: number } => {
+  if (anterior === null || NIVEIS.indexOf(pedido) >= NIVEIS.indexOf(anterior)) {
+    return { nivel: pedido, abaixo: 0 }
+  }
+  const seguidos = abaixo + 1
+  return seguidos >= REBAIXAR_APOS ? { nivel: pedido, abaixo: 0 } : { nivel: anterior, abaixo: seguidos }
 }
 
 const SINAIS_COMPLEXA = [
@@ -50,7 +90,9 @@ export const nivelHeuristico = (texto: string, anterior: Nivel | null): Nivel | 
   if (t.length > 1500 || complexos >= 2 || blocosDeCodigo >= 3) {
     return 'complexa'
   }
-  if (complexos === 1 && simples === 0) {
+  // Um sinal isolado num prompt curto ("como ativo o modo debug?") é
+  // ambíguo demais para pagar o Opus sem perguntar ao classificador.
+  if (complexos === 1 && simples === 0 && t.length >= 120) {
     return 'complexa'
   }
   if (simples > 0 && complexos === 0 && t.length < 300) {
@@ -81,7 +123,7 @@ const classificar = async ($: EngineInterface, texto: string): Promise<Nivel> =>
   return nivel ?? 'moderada'
 }
 
-const mostrar = ($: EngineInterface, modo: Modo, nivel: Nivel | null) => {
+const mostrar = ($: EngineInterface, rota: Record<Nivel, Rota>, modo: Modo, nivel: Nivel | null) => {
   if (modo === 'off') {
     $.ui.status(undefined)
     return
@@ -91,18 +133,20 @@ const mostrar = ($: EngineInterface, modo: Modo, nivel: Nivel | null) => {
     return
   }
   const fixo = modo === 'auto' ? '' : ' (fixo)'
-  $.ui.status(`auto-modelo: ${nivel} → ${ROTA[nivel].rotulo}${fixo}`)
+  $.ui.status(`auto-modelo: ${nivel} → ${rotulo(rota[nivel])}${fixo}`)
 }
 
 const MODOS: readonly Modo[] = ['auto', 'off', 'simples', 'moderada', 'complexa']
 
-export const register: Register = on => {
+export const register: Register = (on, options) => {
+  const ROTA = rotas(options)
+
   on('session.start', async ($, e, next) => {
     await $.command.register({
       name: 'auto-modelo',
       description: 'auto | off | simples | moderada | complexa | status: controla a troca automática de modelo',
     })
-    mostrar($, await read($, modoAtual), await read($, nivelAtual))
+    mostrar($, ROTA, await read($, modoAtual), await read($, nivelAtual))
 
     return next(e)
   })
@@ -113,7 +157,7 @@ export const register: Register = on => {
     if (pedido === '' || pedido === 'status') {
       const modo = await read($, modoAtual)
       const nivel = await read($, nivelAtual)
-      const linhas = Object.entries(ROTA).map(([n, r]) => `  ${n}: ${r.model} (${r.effort})`)
+      const linhas = NIVEIS.map(n => `  ${n}: ${ROTA[n].model} (${ROTA[n].effort})`)
 
       return {
         text: [`modo: ${modo}`, `último nível: ${nivel ?? '—'}`, 'rotas:', ...linhas].join('\n'),
@@ -127,7 +171,8 @@ export const register: Register = on => {
     await update($, modoAtual, () => modo)
     const nivel = modo === 'auto' || modo === 'off' ? await read($, nivelAtual) : modo
     await update($, nivelAtual, () => nivel)
-    mostrar($, modo, nivel)
+    await update($, abaixoAtual, () => 0)
+    mostrar($, ROTA, modo, nivel)
 
     return { text: `auto-modelo: ${modo}` }
   })
@@ -145,9 +190,11 @@ export const register: Register = on => {
     }
 
     const anterior = await read($, nivelAtual)
-    const nivel = nivelHeuristico(e.text, anterior) ?? (await classificar($, e.text))
+    const pedido = nivelHeuristico(e.text, anterior) ?? (await classificar($, e.text))
+    const { nivel, abaixo } = proximoNivel(anterior, pedido, await read($, abaixoAtual))
     await update($, nivelAtual, () => nivel)
-    mostrar($, modo, nivel)
+    await update($, abaixoAtual, () => abaixo)
+    mostrar($, ROTA, modo, nivel)
 
     return next(e)
   }).catch(($, e, next) => next(e))

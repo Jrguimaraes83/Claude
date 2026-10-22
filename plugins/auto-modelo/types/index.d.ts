@@ -5,6 +5,10 @@ export type Modo = 'auto' | 'off' | Nivel
 
 declare module 'claude-code' {
   interface PluginState {
-    'auto-modelo': { nivel: Nivel | null; modo: Modo }
+    /**
+     * `abaixo`: quantos prompts seguidos pediram um nível menor que o atual;
+     * o rebaixamento só acontece quando chega a `REBAIXAR_APOS`.
+     */
+    'auto-modelo': { nivel: Nivel | null; modo: Modo; abaixo: number }
   }
 }
